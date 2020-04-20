@@ -74,10 +74,12 @@ int main (int argc, char *argv[])
     free(line_buf);
     line_buf = NULL;
     fclose(fp2);
+    /*
     for (int i = 0; i < notas_size; i++)
     {
         printf("Nota: %f\n", notas[i]);
     }
+    */
     printf("\nStandard Deviation = %.4f\n", calculateSD(notas, notas_size));
     return 0;
 }

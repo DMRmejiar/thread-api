@@ -17,16 +17,22 @@ struct cuenta_param
 
 int main (int argc, char *argv[])
 { 
-    if (argc!= 2)
+    if (argc < 2)
     {
-        printf ("Indica el nombre de un fichero.\n");
+        printf ("Indica el nombre de un fichero o ficheros.\n");
         exit (0);
     }
-    pthread_t threads_ids;
-    struct cuenta_param thread_args;
-    thread_args.name = argv[1];
-    pthread_create (&threads_ids, NULL, &cuenta, &thread_args);
-    pthread_join (threads_ids, NULL);
+    pthread_t threads_ids[argc-1];
+    struct cuenta_param thread_args[argc-1];
+    for (int i = 0; i < (argc-1); i++)
+    {
+        thread_args[i].name = argv[i+1];
+        pthread_create (&threads_ids[i], NULL, &cuenta, &thread_args[i]);
+    }
+    for (int i = 0; i < (argc-1); i++)
+    {
+        pthread_join (threads_ids[i], NULL);
+    }
     return 0;
 }
 
@@ -37,6 +43,12 @@ void *cuenta (void *parameters)
     char cadena[MAXLON];
     int fd;
     fd = open (param->name, O_RDONLY);
+    if (fd == -1)
+    {
+        printf("El archivo %s no lo encuentro.\n", param->name);
+        close(fd);
+        return NULL;
+    }
     while ((leidos = read (fd, cadena, MAXLON)) != 0) 
     {
         for (pos = 0; pos < leidos; pos++) 
